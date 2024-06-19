@@ -2,6 +2,22 @@
 #include <fstream>
 
 using namespace std;
+
+const int ARRAY_SIZE = 50;
+string nouns[ARRAY_SIZE];
+string verbs[ARRAY_SIZE];
+string adjectives[ARRAY_SIZE];
+
+void fill_array(string array[ARRAY_SIZE], string text) {
+    ifstream infile;
+    infile.open(text);
+    string word;
+    for(int i = 0; i < ARRAY_SIZE; i++) {
+        infile >> word;
+        array[i] = word;
+    }
+}
+
 int pick_file() {
     string option;
     cout << "Which template would you like to use." << endl;
@@ -109,12 +125,10 @@ void call_menu(int int_option, int strategy, ifstream &infile) {
     }
 }
 
-
-/*
- * Make global arrays to fill verbs, noun, adjectives to call them.
- */
-
 int main() {
+    fill_array(nouns, "nouns.txt");
+    fill_array(verbs, "verbs.txt");
+    fill_array(adjectives, "adjectives.txt");
 
     ifstream infile;
     int option = pick_file();
