@@ -26,14 +26,15 @@ void fill_array(string array[ARRAY_SIZE], string text) {
 int pick_file() {
     string option;
     cout << "Which template would you like to use." << endl;
-    cout << "Options are: 1. 'fairytale_long.txt', 2. 'fairytale_short.txt', 3. 'custom_fairytale.txt'" << endl;
+    cout << "Options are: 1. 'fairytale_long.txt', 2. 'fairytale_short.txt', 3. 'custom_fairytale.txt', 4. Load your own file!" << endl;
     cin >> option;
     try{
         int int_option = stoi(option);
-        if(int_option == 1 || int_option == 2 || int_option == 3) {
+        if(int_option == 1 || int_option == 2 || int_option == 3 || int_option == 4) {
             return int_option;
         } else {
-            cout << "The option must be an integer within 1-3." << endl;
+            cout << "The option must be an integer within 1-4." << endl << endl;
+            pick_file();
         }
     } catch(exception &e) {
         cout << "The answer must be an integer." << endl;
@@ -43,8 +44,8 @@ int pick_file() {
 
 int recursive_or_iterative() {
     string answer;
-    cout << "Would you like your madlib to be solved: 1. Recursively, 2. Iteratively." << endl;
     cout << "Please type the number associated with the way you would like the file to be solved" << endl;
+    cout << "Would you like your madlib to be solved: 1. Recursively, 2. Iteratively." << endl;
     cin >> answer;
     try{
         int int_answer = stoi(answer);
@@ -53,10 +54,12 @@ int recursive_or_iterative() {
         } else if (int_answer == 2) {
             return 2;
         } else {
-            cout << "This is not a valid answer. Please try again. It must be either 1 or 2" << endl;
+            cout << "This is not a valid answer. Please try again. It must be either 1 or 2" << endl << endl;
+            recursive_or_iterative();
         }
     } catch(exception &e) {
-        cout << "The answer must be an integer." << endl;
+        cout << "The answer must be an integer, try again!" << endl;
+        recursive_or_iterative();
         throw e;
     }
 }
@@ -132,7 +135,7 @@ void recursive(string &file, int pos) {
     }
 }
 
-void iterative(string &file, string &typings, int pos) {
+void iterative(string &file, int pos) {
     /*
      * Iterate through entire size of file, if index "<" being appending typing.
      * If typing has more than 1 character and last character is not ">" go through again.
@@ -176,26 +179,55 @@ void iterative(string &file, string &typings, int pos) {
     cout << file;
 }
 
-void handle_file_pushing(ifstream &infile, string &typings, int pos) {
+void handle_file_pushing(ifstream &infile, int pos, int type) {
     string new_file = read_file(infile);
     recursive(new_file, pos);
 }
 
 void call_menu(int int_option, int strategy, ifstream &infile) {
+    bool invalid_input = true;
+    int try_again = 0;
     int pos = 0;
+    int answer = 0;
     switch(int_option) {
         case 1:
             infile.open("fairytale_long.txt");
             if(infile.is_open()) {
                 cout << "File opened" << endl;
                 if(strategy == 1) {
-                    string typings = "";
-                    handle_file_pushing(infile, typings, pos);
+                    handle_file_pushing(infile, pos, 1);
                 } else if(strategy == 2) {
-                    //(infile, "filler", pos);
+                    handle_file_pushing(infile, pos, 2);
+                }
+
+                while(invalid_input) {
+                    try_again;
+                    cout << endl << "Would you like to go again?" << endl;
+                    cout << "1) Yes     2) No" << endl;
+                    cin >> try_again;
+                    invalid_input = true;
+                    if(try_again == 0) {
+                        invalid_input = false;
+                    } else if (try_again == 1) {
+                        call_menu(pick_file(), recursive_or_iterative(), infile);
+                        invalid_input = false;
+                    } else if(try_again == 2) {
+                        cout << "Have a good day!" << endl;
+                        invalid_input = false;
+                    } else {
+                        cout << "Invalid input. Try again!" << endl;
+
+                    }
                 }
             } else {
-                cout << "File not opened";
+                cout << "File failed to open, would you like to try again?" << endl;
+                cout << "1) Yes    2) No" << endl;
+                cin >> answer;
+                if(answer == 1) {
+                    call_menu(pick_file(), recursive_or_iterative(), infile);
+                } else {
+                    break;
+                }
             }
             break;
         case 2:
@@ -203,34 +235,139 @@ void call_menu(int int_option, int strategy, ifstream &infile) {
             if(infile.is_open()) {
                 cout << "File opened" << endl;
                 if(strategy == 1) {
-                    string typings = "";
-                    handle_file_pushing(infile, typings, pos);
+                    handle_file_pushing(infile, pos, 1);
                 } else if(strategy == 2) {
-                    //iterative(infile, "filler", pos);
+                    handle_file_pushing(infile, pos, 2);
+                }
+
+                while(invalid_input) {
+                    try_again;
+                    cout << endl << "Would you like to go again?" << endl;
+                    cout << "1) Yes     2) No" << endl;
+                    cin >> try_again;
+                    invalid_input = true;
+                    if(try_again == 0) {
+                        invalid_input = false;
+                    } else if (try_again == 1) {
+                        call_menu(pick_file(), recursive_or_iterative(), infile);
+                        invalid_input = false;
+                    } else if(try_again == 2) {
+                        cout << "Have a good day!" << endl;
+                        invalid_input = false;
+                    } else {
+                        cout << "Invalid input. Try again!" << endl;
+
+                    }
                 }
             } else {
-                cout << "File not opened";
+                cout << "File failed to open, would you like to try again?" << endl;
+                cout << "1) Yes    2) No" << endl;
+                cin >> answer;
+                if(answer == 1) {
+                    call_menu(pick_file(), recursive_or_iterative(), infile);
+                } else {
+                    break;
+                }
             }
             break;
         case 3:
-            infile.open("fairytale_custom.txt");
+            infile.open("custom_fairytale.txt");
             if(infile.is_open()) {
                 cout << "File opened" << endl;
                 if(strategy == 1) {
-                    string typings = "";
-                    handle_file_pushing(infile, typings, pos);
+                    handle_file_pushing(infile, pos, 1);
                 } else if(strategy == 2) {
-                    //iterative(infile, "filler", pos);
+                    handle_file_pushing(infile, pos, 2);
+                }
+
+                while(invalid_input) {
+                    try_again;
+                    cout << endl << "Would you like to go again?" << endl;
+                    cout << "1) Yes     2) No" << endl;
+                    cin >> try_again;
+                    invalid_input = true;
+                    if(try_again == 0) {
+                        invalid_input = false;
+                    } else if (try_again == 1) {
+                        call_menu(pick_file(), recursive_or_iterative(), infile);
+                        invalid_input = false;
+                    } else if(try_again == 2) {
+                        cout << "Have a good day!" << endl;
+                        invalid_input = false;
+                    } else {
+                        cout << "Invalid input. Try again!" << endl;
+
+                    }
                 }
             } else {
-                cout << "File not opened";
+                cout << "File failed to open, would you like to try again?" << endl;
+                cout << "1) Yes    2) No" << endl;
+                cin >> answer;
+                if(answer == 1) {
+                    call_menu(pick_file(), recursive_or_iterative(), infile);
+                } else {
+                    break;
+                }
             }
             break;
         case 4:
-            cout << "You picked an invalid option, please try again.";
-            // make it do something.
+            //Loading a new file first.
+            try{
+                string filename;
+                cout << endl << "Please type the file name." << endl;
+                cin >> filename;
+                infile.open(filename);
+                if(infile.is_open()) {
+                    if (strategy == 1) {
+                        handle_file_pushing(infile, pos, 1);
+                    } else if (strategy == 2) {
+                        handle_file_pushing(infile, pos, 2);
+                    }
+
+                    while(invalid_input) {
+                        try_again;
+                        cout << endl << "Would you like to go again?" << endl;
+                        cout << "1) Yes     2) No" << endl;
+                        cin >> try_again;
+                        invalid_input = true;
+                        if(try_again == 0) {
+                            invalid_input = false;
+                        } else if (try_again == 1) {
+                            call_menu(pick_file(), recursive_or_iterative(), infile);
+                            invalid_input = false;
+                        } else if(try_again == 2) {
+                            cout << "Have a good day!" << endl;
+                            invalid_input = false;
+                        } else {
+                            cout << "Invalid input. Try again!" << endl;
+
+                        }
+                    }
+                } else {
+                    cout << "File failed to open, would you like to try again?" << endl;
+                    cout << "1) Yes    2) No" << endl;
+                    cin >> answer;
+                    if(answer == 1) {
+                        call_menu(pick_file(), recursive_or_iterative(), infile);
+                    } else {
+                        break;
+                    }
+                }
+            } catch (exception &e) {
+                cout << "File could not be opened." << endl;
+                throw e;
+            }
             break;
+
         default:
+            cout << "You picked an invalid option, would you like to try again?" << endl;
+            cout << "1) Yes    2) No" << endl;
+            cin >> answer;
+            if(answer == 1) {
+                call_menu(pick_file(), recursive_or_iterative(), infile);
+            } else {
+                break;
+            }
             break;
     }
 }
@@ -248,4 +385,3 @@ int main() {
 
     return 0;
 }
-
